@@ -32,33 +32,35 @@ public class ThreadTwoHashMapBroken extends Thread {
         ThreadTwoHashMapBroken tm = new ThreadTwoHashMapBroken(""+10);
         //1 run
         // What's wrong with this idea??...
-        //these will create threads inside of the threads which may lead to unforseen issues
-        // my guess is that because the threads are abstracted inside of the bigger threads the
-        //exception is contained inside of the parent class 
+        //hashmap is not thread safe and it has the potential to get concurrently modified
+        //specifically the hashmap get concurrently modified with the put method
+        //**the put method expects a certain value for it to change but if that value gets modified
+        //it raises the concurrent modification exception**
+        //also since hashmap has class scope and not local scope it can get modified by a thread from either parent
+
         new Thread("Run of " + 6){
             public void run(){
-                tm.runMapOfSize(6);
+                tm.runMapOfSize(6,0);
             }
         }.start();
         new Thread("Run of " + 8){
             public void run(){
-                tm.runMapOfSize(8);
+                tm.runMapOfSize(8,6);
             }
         }.start();
 
     }
 
-    private void runMapOfSize(int size) {
+    private void runMapOfSize(int size,int start) {
         System.out.println("Constructing HashMap of Size "+size);
         Integer threadCount = size;
-
-        for (int i = 0; i < threadCount; i++) {
+        for (int i = start; i < start + threadCount; i++) {
             this.threadMap.put("T"+ i, new ThreadTwoHashMapBroken("T"+ i));
         }
         System.out.println("Starting Threads in HashMap");
         Set<String> names = this.threadMap.keySet();
-        for (String name : names) {
-            this.threadMap.get(name).start();
+        for (int i = start; i < start + threadCount ; i++) {
+            this.threadMap.get("T" + i).start();
         }
         System.out.println("Thread HashMap, all have been started");
     }
