@@ -30,8 +30,11 @@ public class ThreadTwoHashMapBroken extends Thread {
     // Run this
     public static void main(String[] args){
         ThreadTwoHashMapBroken tm = new ThreadTwoHashMapBroken(""+10);
-
+        //1 run
         // What's wrong with this idea??...
+        //these will create threads inside of the threads which may lead to unforseen issues
+        // my guess is that because the threads are abstracted inside of the bigger threads the
+        //exception is contained inside of the parent class 
         new Thread("Run of " + 6){
             public void run(){
                 tm.runMapOfSize(6);
